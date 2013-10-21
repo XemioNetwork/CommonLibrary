@@ -52,6 +52,7 @@
     <Compile Include="Serialization\ISerializer.cs" />
     <Compile Include="Serialization\JsonSerializer.cs" />
     <Compile Include="Serialization\XmlSerializer.cs" />
+    <Compile Include="Storage\IDataStorage.cs" />
     <Compile Include="Storage\SecureDataStorage.cs" />
     <Compile Include="Storage\SecureDataStorageSettings.cs" />
   </ItemGroup>

@@ -12,7 +12,7 @@ namespace Xemio.CommonLibrary.Storage
     /// <summary>
     /// A secure data storage with exchangable serialization and encryption mechanisms.
     /// </summary>
-    public class SecureDataStorage : IDisposable
+    public class SecureDataStorage : IDisposable, IDataStorage
     {
         #region Fields
         private readonly IsolatedStorageFile _isolatedStorage;
@@ -24,7 +24,7 @@ namespace Xemio.CommonLibrary.Storage
         /// </summary>
         public SecureDataStorageSettings Settings { get; private set; }
         #endregion
-        
+
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SecureDataStorage"/> class.
@@ -32,7 +32,7 @@ namespace Xemio.CommonLibrary.Storage
         public SecureDataStorage()
             : this(new SecureDataStorageSettings())
         {
-            
+
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="SecureDataStorage"/> class.
@@ -46,7 +46,7 @@ namespace Xemio.CommonLibrary.Storage
 
         #endregion
 
-        #region Methods
+        #region Implementation of IDataStorage
         /// <summary>
         /// Stores the given <paramref name="instance"/> using a default key.
         /// </summary>
@@ -54,7 +54,7 @@ namespace Xemio.CommonLibrary.Storage
         /// <param name="instance">The instance.</param>
         public void Store<T>(T instance)
         {
-            string key = this.Settings.TypeToDefaultKey(typeof (T));
+            string key = this.Settings.TypeToDefaultKey(typeof(T));
             this.Store(instance, key);
         }
         /// <summary>
@@ -66,7 +66,7 @@ namespace Xemio.CommonLibrary.Storage
         public void Store<T>(T instance, string key)
         {
             string fileName = this.Settings.KeyToFileName(key);
-            
+
             if (this._isolatedStorage.FileExists(fileName))
             {
                 this._isolatedStorage.DeleteFile(fileName);
@@ -86,7 +86,7 @@ namespace Xemio.CommonLibrary.Storage
         /// <typeparam name="T">The type of the instance.</typeparam>
         public T Retrieve<T>()
         {
-            string key = this.Settings.TypeToDefaultKey(typeof (T));
+            string key = this.Settings.TypeToDefaultKey(typeof(T));
             return this.Retrieve<T>(key);
         }
         /// <summary>
@@ -124,7 +124,7 @@ namespace Xemio.CommonLibrary.Storage
         private byte[] Serialize<T>(T instance)
         {
             using (MemoryStream stream = new MemoryStream())
-            { 
+            {
                 this.Settings.Serializer.Serialize(instance, stream);
 
                 return stream.ToArray();

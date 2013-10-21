@@ -8,7 +8,7 @@ using Xemio.CommonLibrary.Serialization;
 namespace Xemio.CommonLibrary.Storage
 {
     /// <summary>
-    /// Contains settings for the <see cref="SecureDataStorage"/>.
+    /// Contains settings for the <see cref="DataStorage"/>.
     /// </summary>
     public class SecureDataStorageSettings
     {
