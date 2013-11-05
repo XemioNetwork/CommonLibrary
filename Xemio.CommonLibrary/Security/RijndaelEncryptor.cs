@@ -23,6 +23,9 @@ namespace Xemio.CommonLibrary.Security
         /// <param name="password">The password.</param>
         public RijndaelEncryptor(string password)
         {
+            if (password.Length < 8)
+                password = password.PadRight(8);
+
             Rfc2898DeriveBytes passwordDeriveBytes = new Rfc2898DeriveBytes(password, Encoding.Default.GetBytes(password));
 
             this._rijndael = new RijndaelManaged
@@ -40,7 +43,7 @@ namespace Xemio.CommonLibrary.Security
         {
             this._rijndael = new RijndaelManaged
                                  {
-                                     Key = key, 
+                                     Key = key,
                                      IV = iv
                                  };
         }

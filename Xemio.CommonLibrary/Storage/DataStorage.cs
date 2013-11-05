@@ -12,38 +12,32 @@ namespace Xemio.CommonLibrary.Storage
     /// <summary>
     /// A secure data storage with exchangable serialization and encryption mechanisms.
     /// </summary>
-    public class SecureDataStorage : IDisposable, IDataStorage
+    public class DataStorage : IDisposable, IDataStorage
     {
-        #region Fields
-        private readonly IsolatedStorageFile _isolatedStorage;
-        #endregion
-
         #region Properties
         /// <summary>
         /// Gets the settings.
         /// </summary>
-        public SecureDataStorageSettings Settings { get; private set; }
+        public DataStorageSettings Settings { get; private set; }
         #endregion
 
         #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="SecureDataStorage"/> class.
+        /// Initializes a new instance of the <see cref="DataStorage"/> class.
         /// </summary>
-        public SecureDataStorage()
-            : this(new SecureDataStorageSettings())
+        public DataStorage()
+            : this(new DataStorageSettings())
         {
 
         }
         /// <summary>
-        /// Initializes a new instance of the <see cref="SecureDataStorage"/> class.
+        /// Initializes a new instance of the <see cref="DataStorage"/> class.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        public SecureDataStorage(SecureDataStorageSettings settings)
+        public DataStorage(DataStorageSettings settings)
         {
             this.Settings = settings;
-            this._isolatedStorage = IsolatedStorageFile.GetUserStoreForAssembly();
         }
-
         #endregion
 
         #region Implementation of IDataStorage
@@ -67,15 +61,15 @@ namespace Xemio.CommonLibrary.Storage
         {
             string fileName = this.Settings.KeyToFileName(key);
 
-            if (this._isolatedStorage.FileExists(fileName))
+            if (this.Settings.FileSystem.FileExists(fileName))
             {
-                this._isolatedStorage.DeleteFile(fileName);
+                this.Settings.FileSystem.DeleteFile(fileName);
             }
 
             byte[] serializedInstance = this.Serialize(instance);
             byte[] protectedInstance = this.Settings.Encrypter.Encrypt(serializedInstance);
 
-            using (IsolatedStorageFileStream stream = this._isolatedStorage.CreateFile(fileName))
+            using (Stream stream = this.Settings.FileSystem.OpenFile(fileName, FileMode.Create))
             {
                 stream.Write(protectedInstance, 0, protectedInstance.Length);
             }
@@ -98,13 +92,13 @@ namespace Xemio.CommonLibrary.Storage
         {
             string fileName = this.Settings.KeyToFileName(key);
 
-            if (this._isolatedStorage.FileExists(fileName) == false)
+            if (this.Settings.FileSystem.FileExists(fileName) == false)
             {
                 return default(T);
             }
 
             byte[] protectedData;
-            using (IsolatedStorageFileStream stream = this._isolatedStorage.OpenFile(fileName, FileMode.Open))
+            using (Stream stream = this.Settings.FileSystem.OpenFile(fileName, FileMode.Open))
             {
                 protectedData = new byte[stream.Length];
                 stream.Read(protectedData, 0, (int)stream.Length);
@@ -158,7 +152,7 @@ namespace Xemio.CommonLibrary.Storage
         /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
-            this._isolatedStorage.Dispose();
+            this.Settings.Dispose();
         }
         #endregion
     }
