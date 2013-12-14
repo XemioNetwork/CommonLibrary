@@ -14,6 +14,10 @@ namespace Xemio.CommonLibrary.Storage
     /// </summary>
     public class DataStorage : IDisposable, IDataStorage
     {
+        #region Fields
+        private readonly bool _createdSettings;
+        #endregion
+
         #region Properties
         /// <summary>
         /// Gets the settings.
@@ -28,7 +32,7 @@ namespace Xemio.CommonLibrary.Storage
         public DataStorage()
             : this(new DataStorageSettings())
         {
-
+            this._createdSettings = true;
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="DataStorage"/> class.
@@ -152,7 +156,9 @@ namespace Xemio.CommonLibrary.Storage
         /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
-            this.Settings.Dispose();
+            //Only dispose the settings when we created them
+            if (this._createdSettings)
+                this.Settings.Dispose();
         }
         #endregion
     }
