@@ -25,7 +25,7 @@ namespace Xemio.CommonLibrary.Storage
             this.FileSystem = new FileSystem();
 
             this.KeyToFileName = f => f;
-            this.TypeToDefaultKey = f => f.Name;
+            this.TypeToDefaultKey = f => f.ToString();
         }
         #endregion
 
